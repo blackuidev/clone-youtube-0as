@@ -1,41 +1,38 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/components/ui/use-toast"; // Assuming useToast hook exists
 
 interface CarCardProps {
   car: {
     id: string;
     name: string;
-    make: string;
-    model: string;
-    year: number;
-    pricePerDay: number;
+    price: number;
     imageUrl: string;
-    features: string[];
   };
 }
 
-const CarCard = ({ car }: CarCardProps) => {
+const CarCard: React.FC<CarCardProps> = ({ car }) => {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = () => {
+    addToCart({ ...car, quantity: 1 });
+    toast({
+      title: "Item Added!",
+      description: `${car.name} has been added to your cart.`,
+    });
+  };
+
   return (
-    <Card className="w-full max-w-sm overflow-hidden shadow-lg transition-transform duration-300 hover:scale-105">
-      <img src={car.imageUrl} alt={`${car.make} ${car.model}`} className="w-full h-48 object-cover" />
-      <CardHeader>
-        <CardTitle>{car.make} {car.model}</CardTitle>
-        <CardDescription>{car.year}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {car.features.map((feature, index) => (
-            <Badge key={index} variant="secondary">{feature}</Badge>
-          ))}
-        </div>
-        <p className="text-2xl font-bold text-primary">${car.pricePerDay}<span className="text-sm font-normal text-muted-foreground">/day</span></p>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">View Details</Button>
-        <Button>Rent Now</Button>
-      </CardFooter>
-    </Card>
+    <div className="border p-4 rounded-lg shadow-lg flex flex-col justify-between h-full">
+      <img src={car.imageUrl} alt={car.name} className="w-full h-48 object-cover mb-4 rounded" />
+      <div>
+        <h3 className="text-xl font-bold">{car.name}</h3>
+        <p className="text-gray-600">${car.price.toFixed(2)}/day</p>
+      </div>
+      <Button onClick={handleAddToCart} className="mt-4 w-full">Add to Cart</Button>
+    </div>
   );
 };
 
