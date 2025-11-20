@@ -1,49 +1,35 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from '@/context/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast'; // Assuming useToast is available
+import { useToast } from '@/components/ui/use-toast';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
   const navigate = useNavigate();
+  const { register } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      toast({
-        title: 'Registration Failed',
-        description: 'Passwords do not match.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setLoading(true);
     try {
-      await signup(email, password);
+      await register(email, password);
       toast({
-        title: 'Registration Successful!',
-        description: 'Your account has been created. Please log in.',
+        title: "Registration successful!",
+        description: "Your account has been created. You can now log in.",
       });
       navigate('/login');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: any) {
       toast({
-        title: 'Registration Failed',
-        description: err.message,
-        variant: 'destructive',
+        variant: "destructive",
+        title: "Registration Failed",
+        description: error.message || "An unexpected error occurred.",
       });
     } finally {
       setLoading(false);
@@ -51,14 +37,14 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-120px)] p-4">
+    <div className="flex items-center justify-center min-h-[calc(10vh-4rem)] p-4"> { /* Adjusted min-height */}
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>Create your account to get started.</CardDescription>
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Register for YouTube Clone</CardTitle>
+          <CardDescription>Create your account to start watching videos.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -80,22 +66,11 @@ const RegisterPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Registering...' : 'Register'}
+              {loading ? "Registering..." : "Register"}
             </Button>
-            <div className="mt-4 text-center text-sm">
-              Already have an account?{' '}
+            <div className="text-center text-sm text-muted-foreground mt-4">
+              Already have an account?{" "}
               <Link to="/login" className="underline">
                 Login
               </Link>

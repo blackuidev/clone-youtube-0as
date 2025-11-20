@@ -1,35 +1,47 @@
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import ShopPage from './pages/ShopPage';
-import AboutPage from './pages/AboutPage';
-import NotFound from './pages/NotFound';
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
-import CartPage from './pages/CartPage';
+import NotFound from './pages/NotFound';
+import VideoPlayerPage from './pages/VideoPlayerPage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import Header from './components/layout/Header';
+import Sidebar from './components/layout/Sidebar';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
-import { Toaster } from '@/components/ui/toaster'; // Assuming a Toaster for notifications
+import { AuthProvider } from './context/AuthContext';
+import { Toaster } from '@/components/ui/toaster';
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <Router>
-      <Header />
-      <main className="min-h-[calc(100vh-var(--header-height,60px)-var(--footer-height,60px))]"> {/* Adjust min-height dynamically */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/shop" element={<ShopPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          {/* Example of a protected route */}
-          <Route path="/profile" element={<ProtectedRoute><p className="p-8 text-center text-2xl font-bold">Welcome to your protected profile page!</p></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Footer />
-      <Toaster /> {/* For displaying toasts/notifications */}
+      <AuthProvider>
+        <div className="flex flex-col min-h-screen bg-background text-foreground">
+          <Header toggleSidebar={toggleSidebar} />
+          <div className="flex flex-1 pt-16"> { /* Add padding-top to account for fixed header */}
+            <Sidebar isOpen={isSidebarOpen} />
+            <div className="flex-1 overflow-y-auto">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/watch/:id" element={<VideoPlayerPage />} />
+                <Route path="/results" element={<SearchResultsPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                { /* Protected Routes Example */}
+                <Route path="/dashboard" element={<ProtectedRoute><p>User Dashboard (Protected)</p></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </div>
+        </div>
+        <Toaster />
+      </AuthProvider>
     </Router>
   );
 }

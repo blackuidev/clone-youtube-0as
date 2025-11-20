@@ -2,15 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { AuthContextProvider } from './context/AuthContext.tsx';
-import { CartContextProvider } from './context/CartContext.tsx';
+import { BrowserRouter } from 'react-router-dom'; // Ensure BrowserRouter is imported
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AuthContextProvider>
-      <CartContextProvider>
-        <App />
-      </CartContextProvider>
-    </AuthContextProvider>
+    { /* App.tsx already contains BrowserRouter */}
+    <App />
   </React.StrictMode>,
 );

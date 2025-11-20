@@ -1,38 +1,35 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from '@/context/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast'; // Assuming useToast is available
+import { useToast } from '@/components/ui/use-toast';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
     try {
       await login(email, password);
       toast({
-        title: 'Login Successful!',
-        description: 'You have been logged in.',
+        title: "Logged in successfully!",
+        description: "Welcome back to YouTube Clone.",
       });
       navigate('/');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: any) {
       toast({
-        title: 'Login Failed',
-        description: err.message,
-        variant: 'destructive',
+        variant: "destructive",
+        title: "Login Failed",
+        description: error.message || "An unexpected error occurred.",
       });
     } finally {
       setLoading(false);
@@ -40,14 +37,14 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-120px)] p-4">
+    <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4"> { /* Adjusted min-height */}
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>Enter your email below to login to your account.</CardDescription>
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Login to YouTube Clone</CardTitle>
+          <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -69,12 +66,11 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? "Logging in..." : "Login"}
             </Button>
-            <div className="mt-4 text-center text-sm">
-              Don't have an account?{' '}
+            <div className="text-center text-sm text-muted-foreground mt-4">
+              Don't have an account?{" "}
               <Link to="/register" className="underline">
                 Sign up
               </Link>
